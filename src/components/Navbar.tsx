@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import SearchBar from "../components/SearchBar";
+import SearchBar from "../components/SearchBar"
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  
 
   const menuItems = [
     { title: "Sport" },
@@ -35,19 +37,19 @@ const Navbar = () => {
           </Link>
         </div>
 
-        {/* Right: Menu items + Search */}
-        <div className="hidden md:flex items-center space-x-8">
-          <ul className="flex space-x-8">
-            {menuItems.map(({ title }) => (
-              <li key={title} className="cursor-pointer">
-                {title}
-              </li>
-            ))}
-          </ul>
+        {/* Center/right: Menu items (hidden on small, flex on md+) */}
+        <ul className="hidden md:flex space-x-8">
+          {menuItems.map(({ title }) => (
+            <li key={title} className="cursor-pointer">
+              {title}
+            </li>
+          ))}
+        </ul>
 
-          <SearchBar />
-        </div>
+        <SearchBar/>
+      
       </nav>
+
     </>
   );
 };

@@ -16,7 +16,7 @@ interface Article {
   publishedAt?: string;
 }
 
-const API_KEY = "7c591b1ada654b5494bce20276942b7d";
+const API_KEY = "d45ab2ebe0f24096a86ca194c774e2b5";
 const SEARCH_API = "https://newsapi.org/v2/everything";
 const HEADLINES_API = "https://newsapi.org/v2/top-headlines";
 
