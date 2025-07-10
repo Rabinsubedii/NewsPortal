@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
@@ -20,11 +19,14 @@ const API_KEY = "d45ab2ebe0f24096a86ca194c774e2b5";
 const SEARCH_API = "https://newsapi.org/v2/everything";
 const HEADLINES_API = "https://newsapi.org/v2/top-headlines";
 
+const RECENT_SEARCHES_KEY = "recentSearches";
+
 const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const [searchResults, setSearchResults] = useState<Article[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -40,10 +42,28 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     };
     window.addEventListener("keydown", onKeyDown);
 
+    // Load recent searches from localStorage
+    const saved = localStorage.getItem(RECENT_SEARCHES_KEY);
+    if (saved) setRecentSearches(JSON.parse(saved));
+
     fetchDefaultTopHeadlines();
 
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [isOpen, onClose]);
+
+  const saveSearch = (query: string) => {
+    setRecentSearches((prev) => {
+      // Remove duplicates and limit to 5
+      const filtered = [query, ...prev.filter((q) => q !== query)].slice(0, 5);
+      localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(filtered));
+      return filtered;
+    });
+  };
+
+  const clearRecentSearches = () => {
+    localStorage.removeItem(RECENT_SEARCHES_KEY);
+    setRecentSearches([]);
+  };
 
   const fetchDefaultTopHeadlines = async () => {
     setLoading(true);
@@ -53,8 +73,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
       const response = await fetch(url);
       const data = await response.json();
       setSearchResults(data.articles || []);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (err) {
+    } catch {
       setError("Failed to load top headlines.");
     } finally {
       setLoading(false);
@@ -66,6 +85,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     setError(null);
     setSearchResults([]);
     setHasSearched(true);
+    saveSearch(query);
 
     try {
       const url = `${SEARCH_API}?q=${encodeURIComponent(query)}&apiKey=${API_KEY}&pageSize=30&language=en`;
@@ -77,8 +97,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
       );
 
       setSearchResults(filtered);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (err) {
+    } catch {
       setError("Failed to fetch results");
     } finally {
       setLoading(false);
@@ -89,7 +108,6 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <>
-      {/* Overlay */}
       <div
         onClick={onClose}
         className="fixed inset-0 backdrop-blur-md z-10"
@@ -97,7 +115,6 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
         aria-hidden="true"
       />
 
-      {/* Modal */}
       <div
         role="dialog"
         aria-modal="true"
@@ -109,7 +126,6 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
           className="bg-white rounded-lg shadow-xl max-w-7xl w-full max-h-[80vh] p-8 flex flex-col overflow-hidden"
           style={{ minHeight: "500px" }}
         >
-          {/* Search Field */}
           <Formik
             initialValues={{ query: "" }}
             validationSchema={Yup.object({
@@ -141,7 +157,30 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
             )}
           </Formik>
 
-          {/* Results */}
+          {/* Show recent searches if no search done yet */}
+          {!hasSearched && recentSearches.length > 0 && (
+            <div className="mt-4">
+              <h3 className="font-semibold text-gray-800 mb-2">Recent Searches</h3>
+              <div className="flex gap-2 flex-wrap">
+                {recentSearches.map((query, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => performSearch(query)}
+                    className="bg-gray-200 text-sm px-3 py-1 rounded-full hover:bg-gray-300 transition"
+                  >
+                    {query}
+                  </button>
+                ))}
+                <button
+                  onClick={clearRecentSearches}
+                  className="text-red-500 text-sm underline ml-2"
+                >
+                  Clear All
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="mt-6 overflow-y-auto flex-grow border-t border-gray-300 pt-4">
             {loading && (
               <p className="text-center text-blue-600 font-semibold">Loading...</p>
@@ -200,7 +239,6 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
             )}
           </div>
 
-          {/* Close Button */}
           <button
             type="button"
             onClick={onClose}
@@ -214,7 +252,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   );
 };
 
-const Navbar: React.FC = () => {
+const SearchBar = () => {
   const [searchOpen, setSearchOpen] = useState(false);
 
   return (
@@ -244,4 +282,4 @@ const Navbar: React.FC = () => {
   );
 };
 
-export default Navbar;
+export default SearchBar;
