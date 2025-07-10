@@ -23,7 +23,7 @@ const CategoryFilter = ({ onSelect }: Props) => {
   };
 
   return (
-    <div className="flex flex-wrap gap-2 my-4">
+    <div className="flex flex-wrap gap-2 my-4 justify-center">
       {categories.map((cat) => (
         <button
           key={cat}

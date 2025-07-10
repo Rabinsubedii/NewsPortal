@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
-// import { fetchTopHeadlines } from '../api/newsApi';
 import NewsCard from '../components/NewsCard';
-import SearchBar from '../components/SearchBar';
 import type { NewsArticle } from '../type/NewsArticle';
 import { Link } from 'react-router-dom';
-import useSearchStore from '../store/searchStore'; // ✅ import Zustand store
+import useSearchStore from '../store/searchStore'; 
 import TrendingBadge from "../components/TrendingBadge";
 import CategoryFilter from "../components/CategoryFilter";
-import { fetchCategoryHeadlines } from "../api/newsApi"; // or wherever your api.ts is
+import { fetchCategoryHeadlines } from "../api/newsApi"; 
 
 const Home = () => {
   const [articles, setArticles] = useState<NewsArticle[]>([]);
@@ -32,10 +30,10 @@ const Home = () => {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">
-        Top Headlines — {category.charAt(0).toUpperCase() + category.slice(1)}
+        {/* Top Headlines — {category.charAt(0).toUpperCase() + category.slice(1)} */}
       </h1>
 
-      <SearchBar />
+      {/* <SearchBar /> */}
 
       {/* Category Filter */}
       <CategoryFilter onSelect={(cat) => setCategory(cat)} />
