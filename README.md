@@ -1,4 +1,4 @@
-# Week 6 React application
+News Portal Application With React
 
 Instructions:
 
