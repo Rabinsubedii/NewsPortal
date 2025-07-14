@@ -7,12 +7,15 @@ const Navbar = () => {
 
   
 
-  const menuItems = [
-    { title: "Sport" },
-    { title: "Economy" },
-    { title: "Technology" },
-    { title: "Education" },
-  ];
+const menuItems = [
+  { title: "Top Stories", path: "/" },
+  { title: "World", path: "/category/world" },
+  { title: "Business", path: "/category/business" },
+  { title: "Technology", path: "/category/technology" },
+  { title: "Health", path: "/category/health" },
+  { title: "Sports", path: "/category/sports" },
+];
+
 
   return (
     <>
@@ -38,13 +41,20 @@ const Navbar = () => {
         </div>
 
         {/* Center/right: Menu items (hidden on small, flex on md+) */}
+
         <ul className="hidden md:flex space-x-8">
-          {menuItems.map(({ title }) => (
-            <li key={title} className="cursor-pointer">
-              {title}
-            </li>
-          ))}
-        </ul>
+  {menuItems.map(({ title, path }) => (
+    <li key={title}>
+      <Link
+        to={path}
+        className="text-gray-800 hover:text-blue-600 transition font-medium"
+      >
+        {title}
+      </Link>
+    </li>
+  ))}
+</ul>
+
 
         <SearchBar/>
       

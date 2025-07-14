@@ -8,6 +8,10 @@ const categories = [
   "science",
   "sports",
   "technology",
+  "world",
+  "politics",
+  "education",
+  "travel",
 ];
 
 interface Props {
@@ -23,20 +27,22 @@ const CategoryFilter = ({ onSelect }: Props) => {
   };
 
   return (
-    <div className="flex flex-wrap gap-2 my-4 justify-center">
-      {categories.map((cat) => (
-        <button
-          key={cat}
-          onClick={() => handleClick(cat)}
-          className={`px-3 py-1 rounded-full text-sm ${
-            active === cat
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-          }`}
-        >
-          {cat.charAt(0).toUpperCase() + cat.slice(1)}
-        </button>
-      ))}
+    <div className="overflow-x-auto px-2 my-6">
+      <div className="flex gap-3 justify-center flex-wrap whitespace-nowrap">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => handleClick(cat)}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+              active === cat
+                ? "bg-blue-600 text-white shadow-md"
+                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-100"
+            }`}
+          >
+            {cat.charAt(0).toUpperCase() + cat.slice(1)}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

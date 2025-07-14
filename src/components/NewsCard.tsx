@@ -19,23 +19,27 @@ const NewsCard = ({
     <div className="bg-white rounded shadow p-4 flex flex-col">
       {urlToImage && (
         <img
-            src={urlToImage || "/fallback.jpg"}
-            alt={title}
-            className="w-full h-48 object-cover rounded" />
-
+          src={urlToImage || "/fallback.jpg"}
+          alt={title}
+          className="w-full h-48 object-cover rounded"
+        />
       )}
-      <h2 className="text-lg font-semibold mb-2">{title}</h2>
-      <p className="text-sm text-gray-600 mb-2">{description}</p>
-      <p className="text-xs text-gray-400 mb-2">
-        Source: {source.name} | {new Date(publishedAt).toLocaleDateString()}
-      </p>
+
+      {/* ✅ Clickable title */}
       <a
         href={url}
         target="_blank"
-        className="mt-auto text-blue-600 hover:underline text-sm"
+        rel="noopener noreferrer"
+        className="text-lg font-semibold mb-2 hover:underline"
       >
-        Read More →
+        {title}
       </a>
+
+      <p className="text-sm text-gray-600 mb-2">{description}</p>
+
+      <p className="text-xs text-gray-400 mb-2">
+        Source: {source.name} | {new Date(publishedAt).toLocaleDateString()}
+      </p>
     </div>
   );
 };
