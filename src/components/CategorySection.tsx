@@ -5,7 +5,7 @@ type Props = {
   articles: NewsArticle[];
 };
 
-const CategorySection = ({ title, articles }: Props) => {
+const CategorySection = ({ articles }: Props) => {
   if (articles.length === 0) return null;
 
   // Pick a random featured article
@@ -17,7 +17,6 @@ const CategorySection = ({ title, articles }: Props) => {
 
   return (
     <section className="mt-10">
-      <h2 className="text-xl font-bold mb-6">{title}</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Featured News */}
