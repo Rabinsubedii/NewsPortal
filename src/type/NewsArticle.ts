@@ -3,7 +3,7 @@ export type NewsArticle = {
   title: string;
   description: string;
   url: string;
-  urlToImage: string;
+  image: string;
   source: {
     name: string;
   };

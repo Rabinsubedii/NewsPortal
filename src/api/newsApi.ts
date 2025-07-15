@@ -1,8 +1,8 @@
 const API_KEY = import.meta.env.VITE_NEWS_API_KEY;
-const BASE_URL = 'https://newsapi.org/v2';
+const BASE_URL = 'https://gnews.io/api/v4';
 
 export const fetchTopHeadlines = async () => {
-  const response = await fetch(`${BASE_URL}/top-headlines?country=us&pageSize=12&apiKey=${API_KEY}`);
+  const response = await fetch(`${BASE_URL}/top-headlines?lang=en&country=us&max=12&apikey=${API_KEY}`);
   if (!response.ok) throw new Error('Failed to fetch top headlines');
   const data = await response.json();
   return data.articles;
@@ -10,20 +10,18 @@ export const fetchTopHeadlines = async () => {
 
 export const fetchSearch = async (query: string) => {
   const response = await fetch(
-    `${BASE_URL}/everything?q=${encodeURIComponent(query)}&pageSize=20&apiKey=${API_KEY}`
+    `${BASE_URL}/search?q=${encodeURIComponent(query)}&lang=en&max=20&apikey=${API_KEY}`
   );
   if (!response.ok) throw new Error("Failed to fetch search results");
   const data = await response.json();
   return data.articles;
 };
 
-
-export const fetchCategoryHeadlines = async (category: string) => {
+export const fetchCategoryHeadlines = async (topic: string) => {
   const response = await fetch(
-    `${BASE_URL}/top-headlines?country=us&category=${category}&pageSize=12&apiKey=${API_KEY}`
+    `${BASE_URL}/top-headlines?lang=en&country=us&topic=${topic}&max=12&apikey=${API_KEY}`
   );
   if (!response.ok) throw new Error("Failed to fetch category news");
   const data = await response.json();
   return data.articles;
 };
-
