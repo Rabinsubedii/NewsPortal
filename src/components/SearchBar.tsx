@@ -15,9 +15,9 @@ interface Article {
   publishedAt?: string;
 }
 
-const API_KEY = "d45ab2ebe0f24096a86ca194c774e2b5";
-const SEARCH_API = "https://newsapi.org/v2/everything";
-const HEADLINES_API = "https://newsapi.org/v2/top-headlines";
+const API_KEY = "7e3eb32692b1e755e533ed6d250126c6";
+const SEARCH_API = "https://gnews.io/api/v4/everything";
+const HEADLINES_API = "https://gnews.io/api/v4/top-headlines";
 
 const RECENT_SEARCHES_KEY = "recentSearches";
 
