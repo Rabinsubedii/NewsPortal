@@ -24,7 +24,7 @@ const SearchResults: React.FC = () => {
   .then(setArticles)
   .catch(console.error)
   .finally(() => setLoading(false));
-  }, [query]);
+  }, [addSearch, query]);
 
   return (
     <div>
