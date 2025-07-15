@@ -7,6 +7,8 @@ import Footer from "./components/footer"; // import Footer
 
 
 function App() {
+  console.log("API Key from env:", import.meta.env.VITE_NEWS_API_KEY);
+
   return (
     <div className="min-h-screen bg-gray-100 text-gray-800">
       <Navbar /> {/* Add Navbar here */}
