@@ -11,13 +11,12 @@ interface Article {
   url: string;
   title: string;
   description: string;
-  urlToImage?: string;
+  image?: string;        // GNews uses 'image' for article image
   publishedAt?: string;
 }
 
-const API_KEY = "7e3eb32692b1e755e533ed6d250126c6";
-const SEARCH_API = "https://gnews.io/api/v4/everything";
-const HEADLINES_API = "https://gnews.io/api/v4/top-headlines";
+const API_KEY = import.meta.env.VITE_NEWS_API_KEY; // use env variable
+const BASE_URL = "https://gnews.io/api/v4";
 
 const RECENT_SEARCHES_KEY = "recentSearches";
 
@@ -69,9 +68,14 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     setLoading(true);
     setError(null);
     try {
-      const url = `${HEADLINES_API}?country=us&pageSize=5&apiKey=${API_KEY}`;
+      // GNews top headlines endpoint
+      // max=5 for top 5 headlines, lang=en, country=us
+      const url = `${BASE_URL}/top-headlines?lang=en&country=us&max=5&apikey=${API_KEY}`;
       const response = await fetch(url);
+      if (!response.ok) throw new Error("Failed to fetch top headlines");
       const data = await response.json();
+
+      // GNews returns articles in 'articles' array
       setSearchResults(data.articles || []);
     } catch {
       setError("Failed to load top headlines.");
@@ -88,10 +92,14 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     saveSearch(query);
 
     try {
-      const url = `${SEARCH_API}?q=${encodeURIComponent(query)}&apiKey=${API_KEY}&pageSize=30&language=en`;
+      // GNews search endpoint: use 'q' param
+      // max=30 for max 30 articles, lang=en
+      const url = `${BASE_URL}/search?q=${encodeURIComponent(query)}&max=30&lang=en&apikey=${API_KEY}`;
       const response = await fetch(url);
+      if (!response.ok) throw new Error("Failed to fetch search results");
       const data = await response.json();
 
+      // Filter articles to those with title including query (case-insensitive)
       const filtered = (data.articles || []).filter((article: Article) =>
         article.title?.toLowerCase().includes(query.toLowerCase())
       );
@@ -157,7 +165,6 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
             )}
           </Formik>
 
-          {/* Show recent searches if no search done yet */}
           {!hasSearched && recentSearches.length > 0 && (
             <div className="mt-4">
               <h3 className="font-semibold text-gray-800 mb-2">Recent Searches</h3>
@@ -214,9 +221,9 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                           rel="noopener noreferrer"
                           className="block bg-white rounded-lg shadow-md hover:shadow-xl transition p-4 cursor-pointer"
                         >
-                          {article.urlToImage && (
+                          {article.image && (
                             <img
-                              src={article.urlToImage}
+                              src={article.image}
                               alt={article.title}
                               className="w-full h-40 object-cover rounded-md mb-3"
                             />
