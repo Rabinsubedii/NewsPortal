@@ -8,10 +8,6 @@ const categories = [
   "science",
   "sports",
   "technology",
-  "world",
-  "politics",
-  "education",
-  "travel",
 ];
 
 interface Props {

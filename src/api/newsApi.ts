@@ -17,9 +17,9 @@ export const fetchSearch = async (query: string) => {
   return data.articles;
 };
 
-export const fetchCategoryHeadlines = async (topic: string) => {
+export const fetchCategoryHeadlines = async (category: string) => { 
   const response = await fetch(
-    `${BASE_URL}/top-headlines?lang=en&country=us&topic=${topic}&max=12&apikey=${API_KEY}`
+    `${BASE_URL}/top-headlines?lang=en&country=us&category=${category}&max=12&apikey=${API_KEY}`
   );
   if (!response.ok) throw new Error("Failed to fetch category news");
   const data = await response.json();
