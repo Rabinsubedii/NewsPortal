@@ -59,7 +59,7 @@ const staticData: ProjectInfo[] = [
   },
   {
     label: "Data Source",
-    description: "GNews API (currently disabled for rate limits)",
+    description: "GNews API"
   },
 ];
 
