@@ -13,11 +13,12 @@ const CategorySection = ({ articles }: Props) => {
   const featured = articles[randomIndex];
 
   // Show other articles excluding the featured one
-  const otherArticles = articles.filter((_, i) => i !== randomIndex).slice(0, 6);
+  const otherArticles = articles
+    .filter((_, i) => i !== randomIndex)
+    .slice(0, 6);
 
   return (
     <section className="mt-10">
-
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Featured News */}
         <div className="md:col-span-1 relative">

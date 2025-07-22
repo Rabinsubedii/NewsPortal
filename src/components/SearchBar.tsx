@@ -2,13 +2,15 @@ import React, { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { ClipLoader } from "react-spinners";
-import { useRecentSearches } from "../store/searchStore" // <-- Zustand store
+import { useRecentSearches } from "../store/searchStore"; // Zustand store for managing recent searches
 
+// Props for the SearchModal component
 interface SearchModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+// Type definition for article objects returned by the API
 interface Article {
   url: string;
   title: string;
@@ -17,18 +19,29 @@ interface Article {
   publishedAt?: string;
 }
 
-const API_KEY = import.meta.env.VITE_NEWS_API_KEY;
-const BASE_URL = "https://gnews.io/api/v4";
+const API_KEY = import.meta.env.VITE_NEWS_API_KEY; // API key stored in environment variables
+const BASE_URL = "https://gnews.io/api/v4"; // Base URL for GNews API
 
+/**
+ * SearchModal Component
+ * - Displays a modal with a search bar for articles.
+ * - Uses Zustand for managing recent searches (with localStorage persistence).
+ */
 const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const [searchResults, setSearchResults] = useState<Article[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
 
-  // Zustand state
+  // Zustand store: manages recent searches and provides methods to modify them
   const { recentSearches, addSearch, clearSearches } = useRecentSearches();
 
+  /**
+   * useEffect:
+   * - Resets state when the modal closes.
+   * - Adds 'Escape' key listener to close modal.
+   * - Fetches default top headlines on open.
+   */
   useEffect(() => {
     if (!isOpen) {
       setSearchResults([]);
@@ -43,15 +56,17 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     };
     window.addEventListener("keydown", onKeyDown);
 
-    fetchDefaultTopHeadlines();
+    fetchDefaultTopHeadlines(); // Load top headlines initially
 
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [isOpen, onClose]);
 
+  /** Save search query using Zustand (stored in localStorage). */
   const saveSearch = (query: string) => {
-    addSearch(query); // Use Zustand instead of manual localStorage
+    addSearch(query);
   };
 
+  /** Fetches default top headlines (for initial modal view). */
   const fetchDefaultTopHeadlines = async () => {
     setLoading(true);
     setError(null);
@@ -68,19 +83,23 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  /** Performs article search based on query input. */
   const performSearch = async (query: string) => {
     setLoading(true);
     setError(null);
     setSearchResults([]);
     setHasSearched(true);
-    saveSearch(query);
+    saveSearch(query); // Store query in Zustand (recent searches)
 
     try {
-      const url = `${BASE_URL}/search?q=${encodeURIComponent(query)}&max=30&lang=en&apikey=${API_KEY}`;
+      const url = `${BASE_URL}/search?q=${encodeURIComponent(
+        query
+      )}&max=30&lang=en&apikey=${API_KEY}`;
       const response = await fetch(url);
       if (!response.ok) throw new Error("Failed to fetch search results");
       const data = await response.json();
 
+      // Filter results to include only articles with matching title
       const filtered = (data.articles || []).filter((article: Article) =>
         article.title?.toLowerCase().includes(query.toLowerCase())
       );
@@ -93,10 +112,11 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) return null; // Don't render modal if it's closed
 
   return (
     <>
+      {/* Background overlay */}
       <div
         onClick={onClose}
         className="fixed inset-0 backdrop-blur-md z-10"
@@ -104,6 +124,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
         aria-hidden="true"
       />
 
+      {/* Modal Content */}
       <div
         role="dialog"
         aria-modal="true"
@@ -115,12 +136,16 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
           className="bg-white rounded-lg shadow-xl max-w-7xl w-full max-h-[80vh] p-8 flex flex-col overflow-hidden"
           style={{ minHeight: "500px" }}
         >
+          {/* Search Form (Formik + Yup validation) */}
           <Formik
             initialValues={{ query: "" }}
             validationSchema={Yup.object({
               query: Yup.string()
                 .required("Search cannot be empty")
-                .matches(/^[a-zA-Z0-9\s]+$/, "Only alphanumeric characters allowed"),
+                .matches(
+                  /^[a-zA-Z0-9\s]+$/,
+                  "Only alphanumeric characters allowed"
+                ),
             })}
             onSubmit={(values) => {
               performSearch(values.query);
@@ -146,9 +171,12 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
             )}
           </Formik>
 
+          {/* Recent Search Chips (from Zustand) */}
           {!hasSearched && recentSearches.length > 0 && (
             <div className="mt-4">
-              <h3 className="font-semibold text-gray-800 mb-2">Recent Searches</h3>
+              <h3 className="font-semibold text-gray-800 mb-2">
+                Recent Searches
+              </h3>
               <div className="flex gap-2 flex-wrap">
                 {recentSearches.map((query, idx) => (
                   <button
@@ -169,6 +197,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
             </div>
           )}
 
+          {/* Search Results Section */}
           <div className="mt-6 overflow-y-auto flex-grow border-t border-gray-300 pt-4">
             {loading && (
               <div className="flex justify-center items-center py-10">
@@ -211,13 +240,17 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                               className="w-full h-40 object-cover rounded-md mb-3"
                             />
                           )}
-                          <h3 className="font-semibold text-lg mb-1">{article.title}</h3>
+                          <h3 className="font-semibold text-lg mb-1">
+                            {article.title}
+                          </h3>
                           <p className="text-gray-600 text-sm line-clamp-3">
                             {article.description}
                           </p>
                           <p className="text-xs text-gray-400 mt-2">
                             {article.publishedAt
-                              ? new Date(article.publishedAt).toLocaleDateString()
+                              ? new Date(
+                                  article.publishedAt
+                                ).toLocaleDateString()
                               : ""}
                           </p>
                         </a>
@@ -229,6 +262,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
             )}
           </div>
 
+          {/* Close Button */}
           <button
             type="button"
             onClick={onClose}
@@ -242,6 +276,11 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   );
 };
 
+/**
+ * SearchBar Component
+ * - Shows a search button in the navbar.
+ * - Opens the SearchModal when clicked.
+ */
 const SearchBar = () => {
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -253,6 +292,7 @@ const SearchBar = () => {
           onClick={() => setSearchOpen(true)}
           className="p-2 text-gray-700 hover:text-blue-600 transition"
         >
+          {/* Search Icon */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6"
