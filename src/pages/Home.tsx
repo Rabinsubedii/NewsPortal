@@ -5,6 +5,9 @@ import type { NewsArticle } from '../type/NewsArticle';
 import CategoryFilter from "../components/CategoryFilter";
 import { fetchCategoryHeadlines } from "../api/newsApi"; 
 import CategorySection from "../components/CategorySection";
+import { ClipLoader } from "react-spinners";
+
+
 
 
 const Home = () => {
@@ -47,7 +50,9 @@ const Home = () => {
           <h2 className="text-2xl font-bold mb-6">Latest News</h2>
 
           {loading ? (
-            <p>Loading news...</p>
+            <div className="flex justify-center py-10">
+              <ClipLoader color="#2563eb" size={40} />
+            </div>
           ) : articles.length === 0 ? (
             <div className="mt-10 flex flex-col items-center justify-center bg-gray-100 p-8 rounded-lg shadow-inner text-center">
               <svg

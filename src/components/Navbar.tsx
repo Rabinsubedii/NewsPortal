@@ -1,21 +1,19 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import SearchBar from "../components/SearchBar"
+import SearchBar from "../components/SearchBar";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  
-
-const menuItems = [
-  { title: "Top Stories", path: "/" },
-  { title: "World", path: "/category/world" },
-  { title: "Business", path: "/category/business" },
-  { title: "Technology", path: "/category/technology" },
-  { title: "Health", path: "/category/health" },
-  { title: "Sports", path: "/category/sports" },
-];
-
+  const menuItems = [
+    { title: "Top Stories", path: "/" },
+    { title: "World", path: "/category/world" },
+    { title: "Business", path: "/category/business" },
+    { title: "Technology", path: "/category/technology" },
+    { title: "Health", path: "/category/health" },
+    { title: "Sports", path: "/category/sports" },
+    { title: "Project Summary", path: "/summary" },
+  ];
 
   return (
     <>
@@ -43,23 +41,20 @@ const menuItems = [
         {/* Center/right: Menu items (hidden on small, flex on md+) */}
 
         <ul className="hidden md:flex space-x-8">
-  {menuItems.map(({ title, path }) => (
-    <li key={title}>
-      <Link
-        to={path}
-        className="text-gray-800 hover:text-blue-600 transition font-medium"
-      >
-        {title}
-      </Link>
-    </li>
-  ))}
-</ul>
+          {menuItems.map(({ title, path }) => (
+            <li key={title}>
+              <Link
+                to={path}
+                className="text-gray-800 hover:text-blue-600 transition font-medium"
+              >
+                {title}
+              </Link>
+            </li>
+          ))}
+        </ul>
 
-
-        <SearchBar/>
-      
+        <SearchBar />
       </nav>
-
     </>
   );
 };

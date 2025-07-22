@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { ClipLoader } from "react-spinners";
+import { useRecentSearches } from "../store/searchStore" // <-- Zustand store
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -11,21 +13,21 @@ interface Article {
   url: string;
   title: string;
   description: string;
-  image?: string;        // GNews uses 'image' for article image
+  image?: string;
   publishedAt?: string;
 }
 
-const API_KEY = import.meta.env.VITE_NEWS_API_KEY; // use env variable
+const API_KEY = import.meta.env.VITE_NEWS_API_KEY;
 const BASE_URL = "https://gnews.io/api/v4";
-
-const RECENT_SEARCHES_KEY = "recentSearches";
 
 const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const [searchResults, setSearchResults] = useState<Article[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+
+  // Zustand state
+  const { recentSearches, addSearch, clearSearches } = useRecentSearches();
 
   useEffect(() => {
     if (!isOpen) {
@@ -41,41 +43,23 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     };
     window.addEventListener("keydown", onKeyDown);
 
-    // Load recent searches from localStorage
-    const saved = localStorage.getItem(RECENT_SEARCHES_KEY);
-    if (saved) setRecentSearches(JSON.parse(saved));
-
     fetchDefaultTopHeadlines();
 
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [isOpen, onClose]);
 
   const saveSearch = (query: string) => {
-    setRecentSearches((prev) => {
-      // Remove duplicates and limit to 5
-      const filtered = [query, ...prev.filter((q) => q !== query)].slice(0, 5);
-      localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(filtered));
-      return filtered;
-    });
-  };
-
-  const clearRecentSearches = () => {
-    localStorage.removeItem(RECENT_SEARCHES_KEY);
-    setRecentSearches([]);
+    addSearch(query); // Use Zustand instead of manual localStorage
   };
 
   const fetchDefaultTopHeadlines = async () => {
     setLoading(true);
     setError(null);
     try {
-      // GNews top headlines endpoint
-      // max=5 for top 5 headlines, lang=en, country=us
       const url = `${BASE_URL}/top-headlines?lang=en&country=us&max=5&apikey=${API_KEY}`;
       const response = await fetch(url);
       if (!response.ok) throw new Error("Failed to fetch top headlines");
       const data = await response.json();
-
-      // GNews returns articles in 'articles' array
       setSearchResults(data.articles || []);
     } catch {
       setError("Failed to load top headlines.");
@@ -92,14 +76,11 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     saveSearch(query);
 
     try {
-      // GNews search endpoint: use 'q' param
-      // max=30 for max 30 articles, lang=en
       const url = `${BASE_URL}/search?q=${encodeURIComponent(query)}&max=30&lang=en&apikey=${API_KEY}`;
       const response = await fetch(url);
       if (!response.ok) throw new Error("Failed to fetch search results");
       const data = await response.json();
 
-      // Filter articles to those with title including query (case-insensitive)
       const filtered = (data.articles || []).filter((article: Article) =>
         article.title?.toLowerCase().includes(query.toLowerCase())
       );
@@ -179,7 +160,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                   </button>
                 ))}
                 <button
-                  onClick={clearRecentSearches}
+                  onClick={clearSearches}
                   className="text-red-500 text-sm underline ml-2"
                 >
                   Clear All
@@ -190,7 +171,9 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
 
           <div className="mt-6 overflow-y-auto flex-grow border-t border-gray-300 pt-4">
             {loading && (
-              <p className="text-center text-blue-600 font-semibold">Loading...</p>
+              <div className="flex justify-center items-center py-10">
+                <ClipLoader color="#2563eb" size={40} />
+              </div>
             )}
 
             {error && (

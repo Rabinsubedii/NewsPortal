@@ -2,6 +2,7 @@ import React from "react";
 import { useReactTable, getCoreRowModel, type ColumnDef } from "@tanstack/react-table";
 import type { NewsArticle } from "../type/NewsArticle";
 
+
 interface Props {
   articles: NewsArticle[];
 }

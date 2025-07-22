@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { fetchCategoryHeadlines } from "../api/newsApi";
 import type { NewsArticle } from "../type/NewsArticle";
 import NewsCard from "../components/NewsCard";
+import { ClipLoader } from "react-spinners";
 
 const CategoryPage = () => {
   const { category } = useParams();
@@ -29,7 +30,9 @@ const CategoryPage = () => {
       <h1 className="text-2xl font-bold mb-4 capitalize">{category} News</h1>
 
       {loading ? (
-        <p>Loading...</p>
+         <div className="flex justify-center py-10">
+              <ClipLoader color="#2563eb" size={40} />
+          </div>
       ) : articles.length === 0 ? (
         <p>No articles found.</p>
       ) : (

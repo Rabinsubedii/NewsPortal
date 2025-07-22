@@ -8,7 +8,7 @@ const categories = [
   "science",
   "sports",
   "technology",
-];
+];  // list of categories
 
 interface Props {
   onSelect: (category: string) => void;
